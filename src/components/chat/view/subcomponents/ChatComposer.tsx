@@ -275,6 +275,16 @@ export default function ChatComposer({
       )}
 
       {!hasQuestionPanel && <div className="relative mx-auto max-w-[54.25rem]">
+        {/* Kraken lives in the gutter to the left of the composer, not inside
+            it. Hidden below 2xl: narrower viewports have no gutter to spare
+            once the sidebar is accounted for, and he would collide with the
+            input. */}
+        <ComposerPet
+          isBusy={isLoading}
+          isTyping={input.trim().length > 0}
+          className="absolute right-full top-1/2 z-10 mr-6 hidden -translate-y-1/2 2xl:block"
+        />
+
         {showFileDropdown && filteredFiles.length > 0 && (
           <div className="absolute bottom-full left-0 right-0 z-50 mb-2 max-h-48 overflow-y-auto rounded-xl border border-border/50 bg-card/95 shadow-lg backdrop-blur-md">
             {filteredFiles.map((file, index) => (
@@ -358,13 +368,8 @@ export default function ChatComposer({
           <input {...getInputProps()} />
 
           <PromptInputBody>
-            {/* Kraken sits top-right. The pr-10 below keeps text from running
-                under it -- the highlight mirror must match the textarea's
-                padding exactly or @mention highlighting drifts out of line. */}
-            <ComposerPet isBusy={isLoading} isTyping={input.trim().length > 0} />
-
             <div ref={inputHighlightRef} aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl">
-              <div className="chat-input-placeholder block w-full whitespace-pre-wrap break-words py-2 pl-4 pr-10 text-sm leading-6 text-transparent">
+              <div className="chat-input-placeholder block w-full whitespace-pre-wrap break-words px-4 py-2 text-sm leading-6 text-transparent">
                 {renderInputWithMentions(input)}
               </div>
             </div>
@@ -372,7 +377,6 @@ export default function ChatComposer({
             <PromptInputTextarea
               ref={textareaRef}
               dir="auto"
-              className="pr-10"
               value={input}
               onChange={onInputChange}
               onClick={onTextareaClick}

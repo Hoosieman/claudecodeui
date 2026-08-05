@@ -14,6 +14,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  *   typing  perks up and watches the cursor
  *   busy    agent is streaming -- tentacles work faster
  *   poked   click it; it says something (SNARK: 100)
+ *
+ * Positioning is the caller's job -- this renders a plain relative box so the
+ * composer can hang it in the gutter beside the input.
  */
 
 export type ComposerPetMood = 'idle' | 'typing' | 'busy';
@@ -67,31 +70,33 @@ export default function ComposerPet({
 
   return (
     <div
-      className={['composer-pet pointer-events-none absolute right-2 top-1 z-10', className]
-        .filter(Boolean)
-        .join(' ')}
+      className={['composer-pet pointer-events-none relative', className].filter(Boolean).join(' ')}
       data-mood={mood}
     >
       {remark && (
         <div
           role="status"
-          className="composer-pet-bubble pointer-events-none absolute right-full top-1/2 mr-1.5 hidden -translate-y-1/2 whitespace-nowrap rounded-md border border-border/40 bg-popover/95 px-2 py-1 text-[10px] leading-none text-muted-foreground shadow-sm backdrop-blur-sm sm:block"
+          // w-max is load-bearing: an absolutely-positioned box shrink-to-fits
+          // against its containing block, so without it the bubble wraps to
+          // the pet's own width instead of using max-w-52.
+          className="composer-pet-bubble pointer-events-none absolute bottom-full left-1/2 mb-1 w-max max-w-52 -translate-x-1/2 whitespace-normal rounded-lg border border-border/40 bg-popover/95 px-2.5 py-1.5 text-center text-[11px] leading-snug text-muted-foreground shadow-sm backdrop-blur-sm"
         >
           {remark}
         </div>
       )}
 
       <button
-        // Inside a <form>: without type="button" this submits the message.
+        // Rendered inside the composer <form>: without type="button" this
+        // would submit the message on every poke.
         type="button"
         onClick={poke}
         aria-label="Kraken, a legendary octopus. Poke for an unsolicited opinion."
         title="Kraken ★★★★★"
-        className="composer-pet-hit pointer-events-auto flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground/60 outline-none transition-colors hover:text-muted-foreground focus-visible:ring-1 focus-visible:ring-primary/40"
+        className="composer-pet-hit pointer-events-auto flex h-[104px] w-[104px] items-center justify-center rounded-2xl text-muted-foreground/50 outline-none transition-colors hover:text-muted-foreground/80 focus-visible:ring-1 focus-visible:ring-primary/40"
       >
         <svg
           viewBox="0 0 24 24"
-          className="composer-pet-body h-[22px] w-[22px] overflow-visible"
+          className="composer-pet-body h-[96px] w-[96px] overflow-visible"
           fill="none"
           aria-hidden="true"
           focusable="false"

@@ -1066,7 +1066,7 @@
 
   /* "shiny": legendary companions shimmer, and more so in the dark. */
   .dark .composer-pet-head {
-    filter: drop-shadow(0 0 3px hsl(var(--primary) / 0.35));
+    filter: drop-shadow(0 0 10px hsl(var(--primary) / 0.28));
   }
 
   @keyframes kraken-bob {
@@ -1086,8 +1086,11 @@
     99%, 100% { transform: scaleY(1); }
   }
 
+  /* Speech bubble sits above the pet and is centred with -translate-x-1/2,
+     so the entrance animates translateY only -- animating `transform`
+     wholesale here would clobber that centring mid-flight. */
   @keyframes kraken-bubble {
-    from { opacity: 0; transform: translate(2px, -50%) scale(0.96); }
-    to   { opacity: 1; transform: translate(0, -50%) scale(1); }
+    from { opacity: 0; translate: 0 4px; scale: 0.96; }
+    to   { opacity: 1; translate: 0 0;   scale: 1; }
   }
 }
