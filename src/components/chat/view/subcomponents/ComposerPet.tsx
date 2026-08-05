@@ -69,10 +69,17 @@ export default function ComposerPet({
   }, []);
 
   return (
+    // The outer box carries whatever positioning the caller supplies. It must
+    // NOT set its own `position` utility: Tailwind emits `.relative` after
+    // `.absolute`, so a hardcoded `relative` here would beat an `absolute`
+    // passed in via className regardless of the order they appear in the
+    // attribute -- leaving the pet in normal flow with a percentage offset.
+    // The inner box is the positioning context for the speech bubble.
     <div
-      className={['composer-pet pointer-events-none relative', className].filter(Boolean).join(' ')}
+      className={['composer-pet pointer-events-none', className].filter(Boolean).join(' ')}
       data-mood={mood}
     >
+      <div className="relative">
       {remark && (
         <div
           role="status"
@@ -134,6 +141,7 @@ export default function ComposerPet({
           </g>
         </svg>
       </button>
+      </div>
     </div>
   );
 }
