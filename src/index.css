@@ -1043,13 +1043,35 @@
     animation-duration: 1.6s;
   }
 
-  /* Agent is streaming -- visibly working. */
+  /* ── Busy: agent is working, so Kraken wakes up and swims ──────────
+     Real octopuses jet: the mantle contracts, water fires out, they shoot
+     forward, then glide. So this is burst-glide-burst-glide rather than a
+     smooth rise. Everything below shares the same 5s period to stay in
+     sync with the swim. */
+
+  .composer-pet[data-mood='busy'] .composer-pet-swim {
+    animation: kraken-swim 5s cubic-bezier(0.3, 0, 0.4, 1) infinite;
+  }
+
+  /* Un-dim. Idle he is background furniture; working, he is the thing
+     telling you something is happening. */
+  .composer-pet[data-mood='busy'] .composer-pet-hit {
+    color: hsl(var(--primary));
+  }
+  .dark .composer-pet[data-mood='busy'] .composer-pet-head {
+    filter: drop-shadow(0 0 14px hsl(var(--primary) / 0.55));
+  }
+
+  /* Mantle contraction -- squeeze narrow and long on each jet. */
   .composer-pet[data-mood='busy'] .composer-pet-body {
-    animation-duration: 1.1s;
+    animation: kraken-jet 5s cubic-bezier(0.3, 0, 0.4, 1) infinite;
   }
+
+  /* Tentacles stream out behind on the burst, settle during the glide. */
   .composer-pet[data-mood='busy'] .composer-pet-arm {
-    animation-duration: 0.7s;
+    animation: kraken-trail 5s cubic-bezier(0.3, 0, 0.4, 1) infinite;
   }
+
   .composer-pet[data-mood='busy'] .composer-pet-eyes {
     animation-duration: 2.2s;
   }
@@ -1084,6 +1106,35 @@
     0%, 92%   { transform: scaleY(1); }
     94%, 97%  { transform: scaleY(0.1); }
     99%, 100% { transform: scaleY(1); }
+  }
+
+  /* Four jets up the gutter, fading in at the bottom and out at the top.
+     Each pair of stops is a burst followed by a glide, so the distance
+     covered per burst is large and the glide barely moves. */
+  @keyframes kraken-swim {
+    0%             { transform: translateY(150px); opacity: 0; }
+    6%             { opacity: 1; }
+    18%            { transform: translateY(30px); }
+    27%            { transform: translateY(6px); }
+    40%            { transform: translateY(-110px); }
+    49%            { transform: translateY(-134px); }
+    62%            { transform: translateY(-250px); }
+    71%            { transform: translateY(-274px); }
+    86%            { transform: translateY(-395px); }
+    93%            { opacity: 1; }
+    100%           { transform: translateY(-470px); opacity: 0; }
+  }
+
+  /* Mantle squeezes narrow + long on the burst, relaxes on the glide. */
+  @keyframes kraken-jet {
+    0%, 27%, 49%, 71%   { transform: scale(1, 1); }
+    12%, 34%, 56%, 79%  { transform: scale(0.84, 1.18); }
+  }
+
+  /* Tentacles stretch out behind on the burst, gather on the glide. */
+  @keyframes kraken-trail {
+    0%, 27%, 49%, 71%   { transform: translateY(0) scaleY(1); }
+    12%, 34%, 56%, 79%  { transform: translateY(-1px) scaleY(1.55); }
   }
 
   /* Speech bubble sits above the pet and is centred with -translate-x-1/2,

@@ -79,7 +79,9 @@ export default function ComposerPet({
       className={['composer-pet pointer-events-none', className].filter(Boolean).join(' ')}
       data-mood={mood}
     >
-      <div className="relative">
+      {/* Separate element for the swim: the outer box owns -translate-y-1/2,
+          and animating transform there would fight it. */}
+      <div className="composer-pet-swim relative">
       {remark && (
         <div
           role="status"
