@@ -32,6 +32,7 @@ import {
 import CommandMenu from './CommandMenu';
 import ActivityIndicator from './ActivityIndicator';
 import ComposerAttachment from './ComposerAttachment';
+import ComposerPet from './ComposerPet';
 import VoiceInputButton from './VoiceInputButton';
 import PermissionRequestsBanner from './PermissionRequestsBanner';
 import TokenUsageSummary from './TokenUsageSummary';
@@ -357,8 +358,13 @@ export default function ChatComposer({
           <input {...getInputProps()} />
 
           <PromptInputBody>
+            {/* Kraken sits top-right. The pr-10 below keeps text from running
+                under it -- the highlight mirror must match the textarea's
+                padding exactly or @mention highlighting drifts out of line. */}
+            <ComposerPet isBusy={isLoading} isTyping={input.trim().length > 0} />
+
             <div ref={inputHighlightRef} aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl">
-              <div className="chat-input-placeholder block w-full whitespace-pre-wrap break-words px-4 py-2 text-sm leading-6 text-transparent">
+              <div className="chat-input-placeholder block w-full whitespace-pre-wrap break-words py-2 pl-4 pr-10 text-sm leading-6 text-transparent">
                 {renderInputWithMentions(input)}
               </div>
             </div>
@@ -366,6 +372,7 @@ export default function ChatComposer({
             <PromptInputTextarea
               ref={textareaRef}
               dir="auto"
+              className="pr-10"
               value={input}
               onChange={onInputChange}
               onClick={onTextareaClick}
