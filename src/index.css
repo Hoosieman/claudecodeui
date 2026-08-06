@@ -1025,14 +1025,9 @@
     transform-origin: 50% 30%;
   }
 
-  /* Origin is the point where the arms meet the mantle, in viewBox units --
-     not the arms' own centre. Stretching then radiates from the attachment,
-     so a longer tentacle can only ever push further INTO the body, never
-     peel away from it. Percentages would resolve per-path and let each arm
-     drift off on its own. */
   .composer-pet-arm {
     animation: kraken-arm 2.4s ease-in-out infinite;
-    transform-origin: 12px 17px;
+    transform-origin: 50% 65%;
   }
 
   .composer-pet-eyes {
@@ -1101,11 +1096,9 @@
     50%      { transform: translateY(-1.5px) rotate(-1.5deg); }
   }
 
-  /* No translate: shifting an arm bodily is what unsticks it from the
-     mantle. Scale and rotate about the shared attachment origin instead. */
   @keyframes kraken-arm {
-    0%, 100% { transform: scaleY(1) rotate(0deg); }
-    50%      { transform: scaleY(1.1) rotate(1.5deg); }
+    0%, 100% { transform: translateY(0) scaleY(1); }
+    50%      { transform: translateY(0.6px) scaleY(1.12); }
   }
 
   /* Open for four beats, shut for one -- frameSequence [0,0,0,0,3]. */
@@ -1139,12 +1132,9 @@
   }
 
   /* Tentacles stretch out behind on the burst, gather on the glide. */
-  /* Same rule as kraken-arm: scale only, anchored at the attachment origin.
-     The translate here was pulling the whole arm 1px clear of the mantle on
-     every burst, which is why the gap was worst mid-swim. */
   @keyframes kraken-trail {
-    0%, 27%, 49%, 71%   { transform: scaleY(1); }
-    12%, 34%, 56%, 79%  { transform: scaleY(1.55); }
+    0%, 27%, 49%, 71%   { transform: translateY(0) scaleY(1); }
+    12%, 34%, 56%, 79%  { transform: translateY(-1px) scaleY(1.55); }
   }
 
   /* Speech bubble sits above the pet and is centred with -translate-x-1/2,
