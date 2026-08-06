@@ -100,8 +100,9 @@ export default function ComposerPet({
         type="button"
         onClick={poke}
         aria-label="Kraken, a legendary octopus. Poke for an unsolicited opinion."
-        title="Kraken ★★★★★"
-        className="composer-pet-hit pointer-events-auto flex h-[104px] w-[104px] items-center justify-center rounded-2xl text-muted-foreground/50 outline-none transition-colors hover:text-muted-foreground/80 focus-visible:ring-1 focus-visible:ring-primary/40"
+        // No `title`: the native tooltip would race the nameplate below and
+        // show the same thing twice.
+        className="composer-pet-hit pointer-events-auto flex h-[104px] w-[104px] items-center justify-center rounded-2xl text-muted-foreground/50 outline-none transition-colors focus-visible:ring-1 focus-visible:ring-primary/40"
       >
         <svg
           viewBox="0 0 24 24"
@@ -143,6 +144,17 @@ export default function ComposerPet({
           </g>
         </svg>
       </button>
+
+      {/* Must follow the button in the DOM: the reveal is a sibling selector
+          (.composer-pet-hit:hover ~ .composer-pet-nameplate), which can only
+          look forwards. w-max because an absolutely positioned box otherwise
+          shrink-to-fits against its containing block. */}
+      <div
+        aria-hidden="true"
+        className="composer-pet-nameplate pointer-events-none absolute left-1/2 top-full mt-1 w-max -translate-x-1/2 rounded-md border border-primary/30 bg-popover/95 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary shadow-sm backdrop-blur-sm"
+      >
+        Kraken
+      </div>
       </div>
     </div>
   );
