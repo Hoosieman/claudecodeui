@@ -119,12 +119,17 @@ export default function ComposerPet({
             </linearGradient>
           </defs>
 
+          {/* Every tentacle starts *under* the mantle (which spans x 8.6-15.4
+              at its bottom edge, y 17.2) rather than out at the silhouette's
+              widest point. The outer two used to begin at x=6 and x=18, about
+              a unit clear of the body, so they read as detached -- worst while
+              swimming, when the arms stretch and the gap opens further. */}
           <g className="composer-pet-tentacles" stroke="url(#kraken-shine)" strokeWidth="1.6" strokeLinecap="round">
-            <path className="composer-pet-arm" style={{ animationDelay: '0ms' }} d="M6 15c-.9 1.6-1.4 2.7-1.2 4" />
-            <path className="composer-pet-arm" style={{ animationDelay: '90ms' }} d="M9 16.4c-.5 1.8-.8 3-.4 4.1" />
-            <path className="composer-pet-arm" style={{ animationDelay: '180ms' }} d="M12 16.8v4.2" />
-            <path className="composer-pet-arm" style={{ animationDelay: '270ms' }} d="M15 16.4c.5 1.8.8 3 .4 4.1" />
-            <path className="composer-pet-arm" style={{ animationDelay: '360ms' }} d="M18 15c.9 1.6 1.4 2.7 1.2 4" />
+            <path className="composer-pet-arm" style={{ animationDelay: '0ms' }} d="M9 16.5c-.7 1.7-1.9 2.8-2.8 4.1" />
+            <path className="composer-pet-arm" style={{ animationDelay: '90ms' }} d="M10.6 16.9c-.3 1.8-1 3-1.8 4.1" />
+            <path className="composer-pet-arm" style={{ animationDelay: '180ms' }} d="M12 17v4.2" />
+            <path className="composer-pet-arm" style={{ animationDelay: '270ms' }} d="M13.4 16.9c.3 1.8 1 3 1.8 4.1" />
+            <path className="composer-pet-arm" style={{ animationDelay: '360ms' }} d="M15 16.5c.7 1.7 1.9 2.8 2.8 4.1" />
           </g>
 
           {/* Mantle */}
