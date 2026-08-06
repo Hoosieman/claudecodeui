@@ -202,6 +202,19 @@ export default function ChatComposer({
   // recording and send the transcript in one tap, the way the mic button drops it in the box.
   const voiceAvailable = useVoiceAvailable();
   const [voiceError, setVoiceError] = useState<string | null>(null);
+
+  // Bumped once per composer edit so Kraken taps a tentacle per keystroke.
+  // Counting edits rather than characters is deliberate: one keypress should be
+  // one tap, and a paste should not fire off a burst of them.
+  const [typingPulse, setTypingPulse] = useState(0);
+
+  const handleInputChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
+      setTypingPulse((n) => n + 1);
+      onInputChange(event);
+    },
+    [onInputChange],
+  );
   const voiceErrorTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleVoiceError = useCallback((msg: string) => {
     setVoiceError(msg);
@@ -282,6 +295,7 @@ export default function ChatComposer({
         <ComposerPet
           isBusy={isLoading}
           isTyping={input.trim().length > 0}
+          typingPulse={typingPulse}
           className="absolute right-full top-1/2 z-10 mr-6 hidden -translate-y-1/2 2xl:block"
         />
 
@@ -378,7 +392,7 @@ export default function ChatComposer({
               ref={textareaRef}
               dir="auto"
               value={input}
-              onChange={onInputChange}
+              onChange={handleInputChange}
               onClick={onTextareaClick}
               onKeyDown={onTextareaKeyDown}
               onPaste={onTextareaPaste}

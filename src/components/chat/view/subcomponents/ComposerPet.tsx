@@ -15,6 +15,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  *   busy    agent is streaming -- tentacles work faster
  *   poked   click it; it says something (SNARK: 100)
  *
+ * On top of the mood animations, each keystroke in the composer taps one
+ * tentacle -- see `typingPulse` -- so he looks like he is typing along.
+ *
  * Positioning is the caller's job -- this renders a plain relative box so the
  * composer can hang it in the gutter beside the input.
  */
@@ -35,28 +38,79 @@ const REMARKS: readonly string[] = [
 
 const REMARK_MS = 2600;
 
+/** How many tentacles are drawn -- the keystroke tap cycles through them. */
+const ARM_COUNT = 5;
+
+/** One keypress worth of tentacle. Short enough to keep up with fast typing. */
+const TAP_MS = 260;
+
 interface ComposerPetProps {
   /** True while the agent is streaming a response. */
   isBusy?: boolean;
   /** True when there is text in the composer. */
   isTyping?: boolean;
+  /**
+   * Monotonic counter incremented once per keystroke in the composer. Each
+   * increment taps the next tentacle in rotation, so typing runs left-to-right
+   * across his arms. The value itself is meaningless -- only that it changed.
+   */
+  typingPulse?: number;
   className?: string;
 }
 
 export default function ComposerPet({
   isBusy = false,
   isTyping = false,
+  typingPulse = 0,
   className,
 }: ComposerPetProps) {
   const [remark, setRemark] = useState<string | null>(null);
   const remarkIndex = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Tentacle tapping. Driven imperatively rather than by CSS class toggling:
+  // restarting a CSS animation on an element that is already running one needs
+  // a reflow hack, and at typing speed the same arm can be re-tapped before its
+  // previous tap finishes. Web Animations gives a clean one-shot per keystroke.
+  const armRefs = useRef<(SVGPathElement | null)[]>([]);
+  const armAnims = useRef<(Animation | null)[]>([]);
+  const nextArm = useRef(0);
+
   const mood: ComposerPetMood = isBusy ? 'busy' : isTyping ? 'typing' : 'idle';
 
   useEffect(() => () => {
     if (timer.current) clearTimeout(timer.current);
   }, []);
+
+  useEffect(() => {
+    // 0 is the initial value, not a keystroke -- don't tap on mount.
+    if (!typingPulse) return;
+    // The global prefers-reduced-motion rule can't reach a script-generated
+    // animation, so honour it here explicitly.
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    const index = nextArm.current % ARM_COUNT;
+    nextArm.current += 1;
+
+    const arm = armRefs.current[index];
+    if (!arm?.animate) return;
+
+    // Cancel the in-flight tap on this arm first: without it, rapid typing
+    // stacks animations on one element and the newest fights the leftovers.
+    armAnims.current[index]?.cancel();
+
+    // fill defaults to 'none', so when this finishes the arm falls back to its
+    // idle CSS drift on its own. Script-generated animations outrank CSS ones
+    // in the cascade, so this wins for its duration without touching the class.
+    armAnims.current[index] = arm.animate(
+      [
+        { transform: 'translateY(0) scaleY(1) rotate(0deg)' },
+        { transform: 'translateY(1.6px) scaleY(1.34) rotate(-4deg)', offset: 0.45 },
+        { transform: 'translateY(0) scaleY(1) rotate(0deg)' },
+      ],
+      { duration: TAP_MS, easing: 'ease-out' },
+    );
+  }, [typingPulse]);
 
   const poke = useCallback(() => {
     // Cycle rather than randomise, so repeated pokes never repeat immediately.
@@ -121,11 +175,11 @@ export default function ComposerPet({
           </defs>
 
           <g className="composer-pet-tentacles" stroke="url(#kraken-shine)" strokeWidth="1.6" strokeLinecap="round">
-            <path className="composer-pet-arm" style={{ animationDelay: '0ms' }} d="M6 15c-.9 1.6-1.4 2.7-1.2 4" />
-            <path className="composer-pet-arm" style={{ animationDelay: '90ms' }} d="M9 16.4c-.5 1.8-.8 3-.4 4.1" />
-            <path className="composer-pet-arm" style={{ animationDelay: '180ms' }} d="M12 16.8v4.2" />
-            <path className="composer-pet-arm" style={{ animationDelay: '270ms' }} d="M15 16.4c.5 1.8.8 3 .4 4.1" />
-            <path className="composer-pet-arm" style={{ animationDelay: '360ms' }} d="M18 15c.9 1.6 1.4 2.7 1.2 4" />
+            <path ref={(el) => { armRefs.current[0] = el; }} className="composer-pet-arm" style={{ animationDelay: '0ms' }} d="M6 15c-.9 1.6-1.4 2.7-1.2 4" />
+            <path ref={(el) => { armRefs.current[1] = el; }} className="composer-pet-arm" style={{ animationDelay: '90ms' }} d="M9 16.4c-.5 1.8-.8 3-.4 4.1" />
+            <path ref={(el) => { armRefs.current[2] = el; }} className="composer-pet-arm" style={{ animationDelay: '180ms' }} d="M12 16.8v4.2" />
+            <path ref={(el) => { armRefs.current[3] = el; }} className="composer-pet-arm" style={{ animationDelay: '270ms' }} d="M15 16.4c.5 1.8.8 3 .4 4.1" />
+            <path ref={(el) => { armRefs.current[4] = el; }} className="composer-pet-arm" style={{ animationDelay: '360ms' }} d="M18 15c.9 1.6 1.4 2.7 1.2 4" />
           </g>
 
           {/* Mantle */}

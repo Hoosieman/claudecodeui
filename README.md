@@ -1,21 +1,24 @@
 <div align="center">
- <img src="public/logo.svg" alt="CloudCLI UI" width="64" height="64">
- <h1>Cloud CLI (aka Claude Code UI)</h1>
- <p>A desktop and mobile UI for <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a>, <a href="https://docs.cursor.com/en/cli/overview">Cursor CLI</a>, and <a href="https://developers.openai.com/codex">Codex</a>.<br>Use it locally or remotely to view your active projects and sessions from everywhere.</p>
+ <h1>Kraken</h1>
+ <p>A personal desktop UI for <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a>, tuned for QA work.<br>Use it locally to view your active projects and sessions.</p>
 </div>
 
-<p align="center">
- <a href="https://cloudcli.ai">CloudCLI Cloud</a> · <a href="https://cloudcli.ai/docs">Documentation</a> · <a href="https://discord.gg/buxwujPNRE">Discord</a> · <a href="https://github.com/siteboon/claudecodeui/issues">Bug Reports</a> · <a href="CONTRIBUTING.md">Contributing</a>
-</p>
+---
 
-<p align="center">
- <a href="https://cloudcli.ai"><img src="https://img.shields.io/badge/☁️_CloudCLI_Cloud-Try_Now-0066FF?style=for-the-badge" alt="CloudCLI Cloud"></a>
- <a href="https://discord.gg/buxwujPNRE"><img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Join our Discord"></a>
- <br><br>
- <a href="https://trendshift.io/repositories/15586" target="_blank"><img src="https://trendshift.io/api/badge/repositories/15586" alt="siteboon%2Fclaudecodeui | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
-</p>
+## Attribution
 
-<div align="right"><i><b>English</b> · <a href="./README.ru.md">Русский</a> · <a href="./README.de.md">Deutsch</a> · <a href="./README.ko.md">한국어</a> · <a href="./README.zh-CN.md">简体中文</a> · <a href="./README.zh-TW.md">繁體中文</a> · <a href="./README.ja.md">日本語</a> · <a href="./README.tr.md">Türkçe</a></i></div>
+**Kraken is a modified version of [CloudCLI UI](https://github.com/siteboon/claudecodeui).**
+
+Modified by Cole Smith, August 2026. Licensed under **AGPL-3.0-or-later**, including the
+Section 7 additional terms in [`LICENSE`](LICENSE).
+
+This is an unofficial personal fork. It is **not** affiliated with, endorsed by, or supported by
+Siteboon AI B.V. Do not report issues with this fork to the upstream project.
+
+### Changes from upstream
+
+- Renamed to Kraken; upstream branding, Discord links, and hosted/Pro promotion removed
+- Added Kraken, an octopus companion in the composer gutter, whose tentacles tap as you type
 
 ---
 
