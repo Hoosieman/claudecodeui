@@ -16,6 +16,8 @@ type ClaudeCredentialsStatus = {
   error?: string;
 };
 
+const KEYCHAIN_SERVICE = 'Claude Code-credentials';
+
 const hasErrorCode = (error: unknown, code: string): boolean => (
   error instanceof Error && 'code' in error && error.code === code
 );
@@ -78,6 +80,48 @@ export class ClaudeProviderAuth implements IProviderAuth {
   }
 
   /**
+   * Reads the signed-in account email Claude Code caches in ~/.claude.json.
+   */
+  private async loadOauthAccountEmail(): Promise<string | null> {
+    try {
+      const configPath = path.join(os.homedir(), '.claude.json');
+      const content = await readFile(configPath, 'utf8');
+      const config = readObjectRecord(JSON.parse(content));
+      const account = readObjectRecord(config?.oauthAccount);
+      return readOptionalString(account?.emailAddress) ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * On macOS, Claude Code stores its OAuth credentials in the login keychain instead of
+   * ~/.claude/.credentials.json, so the file check alone reports a logged-in CLI as
+   * disconnected. Probing for the item without `-w` confirms the login from its presence
+   * without unlocking the secret, so it never raises a keychain access prompt.
+   */
+  private async checkMacosKeychain(): Promise<ClaudeCredentialsStatus | null> {
+    if (process.platform !== 'darwin') {
+      return null;
+    }
+
+    const result = spawn.sync('security', ['find-generic-password', '-s', KEYCHAIN_SERVICE], {
+      stdio: 'ignore',
+      timeout: 5000,
+    });
+
+    if (result.error || result.status !== 0) {
+      return null;
+    }
+
+    return {
+      authenticated: true,
+      email: await this.loadOauthAccountEmail(),
+      method: 'keychain',
+    };
+  }
+
+  /**
    * Checks Claude credentials in the same priority order used by Claude Code.
    */
   private async checkCredentials(): Promise<ClaudeCredentialsStatus> {
@@ -134,7 +178,7 @@ export class ClaudeProviderAuth implements IProviderAuth {
         };
       }
 
-      return {
+      return await this.checkMacosKeychain() ?? {
         authenticated: false,
         email: null,
         method: null,
@@ -144,6 +188,10 @@ export class ClaudeProviderAuth implements IProviderAuth {
       let errorMessage = 'Unable to read Claude credentials. Run claude /login again.';
 
       if (hasErrorCode(error, 'ENOENT')) {
+        const keychain = await this.checkMacosKeychain();
+        if (keychain) {
+          return keychain;
+        }
         errorMessage = missingCredentialsError;
       } else if (error instanceof SyntaxError) {
         errorMessage = 'Claude credentials are unreadable. Run claude /login again.';

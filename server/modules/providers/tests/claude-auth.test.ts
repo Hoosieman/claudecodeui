@@ -4,6 +4,8 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
+import spawn from 'cross-spawn';
+
 import { ClaudeProviderAuth } from '@/modules/providers/list/claude/claude-auth.provider.js';
 
 // checkCredentials() is private, but unlike getStatus() it never shells out to the
@@ -134,6 +136,62 @@ test('checkCredentials: no CLAUDE_CODE_OAUTH_TOKEN, expired credentials file rep
       assert.match(status.error ?? '', /expired/i);
     });
   });
+});
+
+// On macOS the CLI keeps its OAuth credentials in the login keychain and never writes
+// ~/.claude/.credentials.json, so a missing file must fall back to the keychain probe
+// rather than reporting a logged-in CLI as disconnected. The probe itself is stubbed
+// here because withTempHome() repoints $HOME, which `security` needs to locate the
+// login keychain — checkMacosKeychain is exercised for real in the test below.
+const stubKeychain = (auth: ClaudeProviderAuth, result: CheckCredentialsResult | null) => {
+  (auth as unknown as { checkMacosKeychain: () => Promise<CheckCredentialsResult | null> })
+    .checkMacosKeychain = async () => result;
+};
+
+test('checkCredentials: no credentials file falls back to the macOS keychain', async () => {
+  await withTempHome(async () => {
+    await withEnv({}, async () => {
+      const auth = new ClaudeProviderAuth();
+      stubKeychain(auth, { authenticated: true, email: 'someone@example.com', method: 'keychain' });
+
+      const status = await checkCredentials(auth);
+      assert.equal(status.authenticated, true);
+      assert.equal(status.method, 'keychain');
+      assert.equal(status.email, 'someone@example.com');
+    });
+  });
+});
+
+test('checkCredentials: no credentials file and no keychain item reports not authenticated', async () => {
+  await withTempHome(async () => {
+    await withEnv({}, async () => {
+      const auth = new ClaudeProviderAuth();
+      stubKeychain(auth, null);
+
+      const status = await checkCredentials(auth);
+      assert.equal(status.authenticated, false);
+      assert.equal(status.method, null);
+      assert.match(status.error ?? '', /not authenticated/i);
+    });
+  });
+});
+
+test('checkMacosKeychain: reports the login keychain item when the CLI is signed in', { skip: process.platform !== 'darwin' }, async () => {
+  const itemExists = spawn.sync('security', ['find-generic-password', '-s', 'Claude Code-credentials'], {
+    stdio: 'ignore',
+  }).status === 0;
+
+  const auth = new ClaudeProviderAuth();
+  const result = await (auth as unknown as {
+    checkMacosKeychain: () => Promise<CheckCredentialsResult | null>;
+  }).checkMacosKeychain();
+
+  if (itemExists) {
+    assert.equal(result?.authenticated, true);
+    assert.equal(result?.method, 'keychain');
+  } else {
+    assert.equal(result, null);
+  }
 });
 
 test('checkCredentials: ANTHROPIC_API_KEY takes precedence over CLAUDE_CODE_OAUTH_TOKEN', async () => {
