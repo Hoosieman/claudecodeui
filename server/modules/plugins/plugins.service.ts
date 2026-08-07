@@ -52,6 +52,26 @@ function normalizePluginManifest(value: unknown): PluginManifest {
   return manifest as PluginManifest;
 }
 
+/**
+ * Run a loader operation, promoting its plain Error into an AppError.
+ *
+ * Without this the global handler treats a failed clone, build or removal as an
+ * unexpected fault and answers "Internal server error", so the one detail worth
+ * showing — why it failed — never reaches the client.
+ */
+async function withReportableFailure<T>(
+  operation: () => Promise<T>,
+  code: string,
+  statusCode: number,
+): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(error instanceof Error ? error.message : String(error), { code, statusCode });
+  }
+}
+
 /** Creates plugin-management workflows around loader and process adapters. */
 export function createPluginsService(dependencies: PluginDependencies) {
   async function startServerIfAvailable(plugin: PluginManifest): Promise<void> {
@@ -109,7 +129,9 @@ export function createPluginsService(dependencies: PluginDependencies) {
       if (!url || (!url.startsWith('https://') && !url.startsWith('git@'))) {
         throw new AppError('URL must start with https:// or git@', { code: 'INVALID_PLUGIN_URL', statusCode: 400 });
       }
-      const plugin = normalizePluginManifest(await dependencies.install(url));
+      const plugin = normalizePluginManifest(
+        await withReportableFailure(() => dependencies.install(url), 'PLUGIN_INSTALL_FAILED', 400),
+      );
       await startServerIfAvailable(plugin);
       return { success: true, plugin };
     },
@@ -117,7 +139,9 @@ export function createPluginsService(dependencies: PluginDependencies) {
       validatePluginName(pluginName);
       const wasRunning = dependencies.isServerRunning(pluginName);
       if (wasRunning) await dependencies.stopServer(pluginName);
-      const plugin = normalizePluginManifest(await dependencies.update(pluginName));
+      const plugin = normalizePluginManifest(
+        await withReportableFailure(() => dependencies.update(pluginName), 'PLUGIN_UPDATE_FAILED', 400),
+      );
       if (wasRunning) await startServerIfAvailable(plugin);
       return { success: true, plugin };
     },
@@ -140,7 +164,11 @@ export function createPluginsService(dependencies: PluginDependencies) {
     async uninstall(pluginName: string) {
       validatePluginName(pluginName);
       if (dependencies.isServerRunning(pluginName)) await dependencies.stopServer(pluginName);
-      await dependencies.uninstall(pluginName);
+      await withReportableFailure(
+        () => dependencies.uninstall(pluginName),
+        'PLUGIN_UNINSTALL_FAILED',
+        500,
+      );
       return { success: true, name: pluginName };
     },
   };
