@@ -156,11 +156,11 @@ export default function ComposerPet({
         aria-label="Kraken, a legendary octopus. Poke for an unsolicited opinion."
         // No `title`: the native tooltip would race the nameplate below and
         // show the same thing twice.
-        className="composer-pet-hit pointer-events-auto flex h-[104px] w-[104px] items-center justify-center rounded-2xl text-muted-foreground/50 outline-none transition-colors focus-visible:ring-1 focus-visible:ring-primary/40"
+        className="composer-pet-hit pointer-events-auto flex h-[78px] w-[78px] items-center justify-center rounded-2xl text-muted-foreground/50 outline-none transition-colors focus-visible:ring-1 focus-visible:ring-primary/40"
       >
         <svg
           viewBox="0 0 24 24"
-          className="composer-pet-body h-[96px] w-[96px] overflow-visible"
+          className="composer-pet-body h-[72px] w-[72px] overflow-visible"
           fill="none"
           aria-hidden="true"
           focusable="false"
