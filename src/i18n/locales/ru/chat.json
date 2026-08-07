@@ -110,9 +110,11 @@
     "attachImages": "Прикрепить изображения",
     "send": "Отправить",
     "stop": "Остановить",
-    "hintText": {
-      "ctrlEnter": "Ctrl+Enter для отправки • Shift+Enter для новой строки • Tab для смены режима • / для команд",
-      "enter": "Enter для отправки • Shift+Enter для новой строки • Tab для смены режима • / для команд"
+    "usageLimits": {
+      "sessionLabel": "Сессия",
+      "weeklyLabel": "Неделя",
+      "sessionTitle": "Лимит сессии (5 ч)",
+      "weeklyTitle": "Недельный лимит (7 дн.)"
     },
     "clickToChangeMode": "Нажмите для смены режима разрешений (или нажмите Tab в поле ввода)",
     "showAllCommands": "Показать все команды",

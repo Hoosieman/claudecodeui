@@ -119,11 +119,11 @@
     "attachImages": "Attach images",
     "send": "Send",
     "stop": "Stop",
-    "hintText": {
-      "ctrlEnter": "Ctrl+Enter to send • Shift+Enter for new line • Tab to change modes • / for slash commands",
-      "enter": "Enter to send • Shift+Enter for new line • Tab to change modes • / for slash commands",
-      "queue": "Enter to queue your next message",
-      "updateQueued": "Enter to update queued message"
+    "usageLimits": {
+      "sessionLabel": "Session",
+      "weeklyLabel": "Week",
+      "sessionTitle": "Session limit (5h)",
+      "weeklyTitle": "Weekly limit (7d)"
     },
     "clickToChangeMode": "Click to change permission mode (or press Tab in input)",
     "showAllCommands": "Show all commands",
@@ -143,7 +143,8 @@
     "model": "Model",
     "effortDefault": "Default",
     "loadingModels": "Loading models…",
-    "modelMenu": "Select model and reasoning effort",
+    "modelMenuTitle": "Model: {{model}}",
+    "effortMenuTitle": "Reasoning: {{effort}}",
     "permissionHeading": "How should {{provider}} actions be approved?"
   },
   "providerSelection": {

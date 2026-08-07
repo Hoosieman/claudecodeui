@@ -14,6 +14,7 @@ import { PaperclipIcon, MessageSquareIcon, XIcon, Loader2, ArrowUpIcon } from 'l
 
 import { useVoiceInput } from '../../hooks/useVoiceInput';
 import { useVoiceAvailable } from '../../hooks/useVoiceAvailable';
+import { useClaudeUsageLimits } from '../../hooks/useClaudeUsageLimits';
 import type { QueuedDraft } from '../../hooks/useChatComposerState';
 import type { SessionActivity } from '../../../../hooks/useSessionProtection';
 import type { PendingPermissionRequest, PermissionMode } from '../../types/types';
@@ -36,7 +37,9 @@ import ComposerPet from './ComposerPet';
 import VoiceInputButton from './VoiceInputButton';
 import PermissionRequestsBanner from './PermissionRequestsBanner';
 import TokenUsageSummary from './TokenUsageSummary';
+import UsageLimitBars from './UsageLimitBars';
 import QueuedMessageCard from './QueuedMessageCard';
+import ComposerEffortMenu from './ComposerEffortMenu';
 import ComposerModelMenu from './ComposerModelMenu';
 import ComposerPermissionMenu from './ComposerPermissionMenu';
 
@@ -119,7 +122,6 @@ interface ChatComposerProps {
   onInputFocusChange?: (focused: boolean) => void;
   placeholder: string;
   isTextareaExpanded: boolean;
-  sendByCtrlEnter?: boolean;
 }
 
 export default function ChatComposer({
@@ -183,7 +185,6 @@ export default function ChatComposer({
   onInputFocusChange,
   placeholder,
   isTextareaExpanded,
-  sendByCtrlEnter,
 }: ChatComposerProps) {
   const { t } = useTranslation('chat');
   const commandMenuPosition = useMemo(() => {
@@ -243,13 +244,7 @@ export default function ChatComposer({
 
   const hasQueuedDraft = Boolean(queuedDraft);
   const canQueueDraft = isLoading && Boolean(input.trim() || attachedFiles.length > 0);
-  const submitHint = canQueueDraft
-    ? hasQueuedDraft
-      ? t('input.hintText.updateQueued', { defaultValue: 'Enter to update queued message' })
-      : t('input.hintText.queue', { defaultValue: 'Enter to queue your next message' })
-    : sendByCtrlEnter
-      ? t('input.hintText.ctrlEnter')
-      : t('input.hintText.enter');
+  const usageLimits = useClaudeUsageLimits(isLoading);
   const submitAriaLabel = canQueueDraft
     ? hasQueuedDraft
       ? t('input.queue.update', { defaultValue: 'Update queued message' })
@@ -448,18 +443,18 @@ export default function ChatComposer({
           </PromptInputTools>
 
           <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
-            <div
-              className={`hidden min-w-0 truncate text-xs text-muted-foreground/50 transition-opacity duration-200 xl:block ${
-                input.trim() && !canQueueDraft ? 'opacity-0' : 'opacity-100'
-              }`}
-            >
-              {submitHint}
-            </div>
+            <UsageLimitBars
+              session={usageLimits?.session ?? null}
+              weekly={usageLimits?.weekly ?? null}
+            />
 
-            <ComposerModelMenu
+            <ComposerEffortMenu
               effort={effort}
               effortOptions={availableEffortOptions}
               onSelectEffort={onSelectEffort}
+            />
+
+            <ComposerModelMenu
               model={model}
               modelOptions={availableModelOptions}
               onSelectModel={onSelectModel}

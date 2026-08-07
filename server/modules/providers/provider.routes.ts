@@ -1,5 +1,6 @@
 import express, { type Request, type Response } from 'express';
 
+import { claudeUsageLimitsService } from '@/modules/providers/services/claude-usage-limits.service.js';
 import { providerAuthService } from '@/modules/providers/services/provider-auth.service.js';
 import { providerCapabilitiesService } from '@/modules/providers/services/provider-capabilities.service.js';
 import { providerMcpService } from '@/modules/providers/services/mcp.service.js';
@@ -371,6 +372,19 @@ const parseSessionModelPayload = (payload: unknown): string => {
 
   return model;
 };
+
+/**
+ * Subscription rate-limit windows for the composer's usage bars. Registered
+ * ahead of the `:provider` routes so the literal path always wins.
+ */
+router.get(
+  '/claude/usage-limits',
+  asyncHandler(async (req: Request, res: Response) => {
+    const bypassCache = parseOptionalBooleanQuery(req.query.bypassCache, 'bypassCache') ?? false;
+    const limits = await claudeUsageLimitsService.getUsageLimits({ bypassCache });
+    res.json(createApiSuccessResponse(limits));
+  }),
+);
 
 router.get(
   '/:provider/auth/status',

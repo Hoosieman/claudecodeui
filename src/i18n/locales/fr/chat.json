@@ -111,9 +111,11 @@
     "attachImages": "Joindre des images",
     "send": "Envoyer",
     "stop": "Arrêter",
-    "hintText": {
-      "ctrlEnter": "Ctrl+Entrée pour envoyer • Maj+Entrée pour nouvelle ligne • Tab pour changer de mode • / pour les commandes slash",
-      "enter": "Entrée pour envoyer • Maj+Entrée pour nouvelle ligne • Tab pour changer de mode • / pour les commandes slash"
+    "usageLimits": {
+      "sessionLabel": "Session",
+      "weeklyLabel": "Semaine",
+      "sessionTitle": "Limite de session (5 h)",
+      "weeklyTitle": "Limite hebdomadaire (7 j)"
     },
     "clickToChangeMode": "Cliquez pour changer le mode de permission (ou appuyez sur Tab dans la saisie)",
     "showAllCommands": "Afficher toutes les commandes",

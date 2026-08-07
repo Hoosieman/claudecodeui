@@ -110,9 +110,11 @@
     "attachImages": "画像を添付",
     "send": "送信",
     "stop": "停止",
-    "hintText": {
-      "ctrlEnter": "Ctrl+Enterで送信 • Shift+Enterで改行 • Tabでモード切替 • / でスラッシュコマンド",
-      "enter": "Enterで送信 • Shift+Enterで改行 • Tabでモード切替 • / でスラッシュコマンド"
+    "usageLimits": {
+      "sessionLabel": "セッション",
+      "weeklyLabel": "週",
+      "sessionTitle": "セッション上限（5時間）",
+      "weeklyTitle": "週間上限（7日）"
     },
     "clickToChangeMode": "クリックで権限モードを変更（または入力欄でTab）",
     "showAllCommands": "すべてのコマンドを表示"

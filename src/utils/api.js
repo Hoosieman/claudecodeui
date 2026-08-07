@@ -199,6 +199,12 @@ export const api = {
     authenticatedFetch(`/api/providers/sessions/${encodeURIComponent(sessionId)}`),
   runningSessions: () =>
     authenticatedFetch('/api/providers/sessions/running'),
+  // Claude subscription rate-limit windows (5-hour session + 7-day weekly)
+  // behind the composer's usage bars.
+  claudeUsageLimits: ({ bypassCache = false } = {}) =>
+    authenticatedFetch(
+      `/api/providers/claude/usage-limits${bypassCache ? '?bypassCache=true' : ''}`,
+    ),
   providerSessionId: (sessionId) =>
     authenticatedFetch(`/api/providers/sessions/${encodeURIComponent(sessionId)}/provider-id`),
   restoreSession: (sessionId) =>

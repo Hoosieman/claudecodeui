@@ -119,11 +119,11 @@
     "attachImages": "Adjuntar imágenes",
     "send": "Enviar",
     "stop": "Detener",
-    "hintText": {
-      "ctrlEnter": "Ctrl+Enter para enviar • Shift+Enter para nueva línea • Tab para cambiar de modo • / para comandos",
-      "enter": "Enter para enviar • Shift+Enter para nueva línea • Tab para cambiar de modo • / para comandos",
-      "queue": "Enter para poner en cola tu siguiente mensaje",
-      "updateQueued": "Enter para actualizar el mensaje en cola"
+    "usageLimits": {
+      "sessionLabel": "Sesión",
+      "weeklyLabel": "Semana",
+      "sessionTitle": "Límite de sesión (5 h)",
+      "weeklyTitle": "Límite semanal (7 días)"
     },
     "clickToChangeMode": "Haz clic para cambiar el modo de permisos (o pulsa Tab en el campo de texto)",
     "showAllCommands": "Mostrar todos los comandos",
@@ -143,7 +143,8 @@
     "model": "Modelo",
     "effortDefault": "Por defecto",
     "loadingModels": "Cargando modelos…",
-    "modelMenu": "Seleccionar modelo y esfuerzo de razonamiento",
+    "modelMenuTitle": "Modelo: {{model}}",
+    "effortMenuTitle": "Razonamiento: {{effort}}",
     "permissionHeading": "¿Cómo se deben aprobar las acciones de {{provider}}?"
   },
   "providerSelection": {

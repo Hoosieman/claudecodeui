@@ -119,11 +119,11 @@
     "attachImages": "附加图片",
     "send": "发送",
     "stop": "停止",
-    "hintText": {
-      "ctrlEnter": "Ctrl+Enter 发送 • Shift+Enter 换行 • Tab 切换模式 • / 斜杠命令",
-      "enter": "Enter 发送 • Shift+Enter 换行 • Tab 切换模式 • / 斜杠命令",
-      "queue": "Enter 排队发送下一条消息",
-      "updateQueued": "Enter 更新排队消息"
+    "usageLimits": {
+      "sessionLabel": "会话",
+      "weeklyLabel": "本周",
+      "sessionTitle": "会话额度（5 小时）",
+      "weeklyTitle": "每周额度（7 天）"
     },
     "clickToChangeMode": "点击更改权限模式（或在输入框中按 Tab）",
     "showAllCommands": "显示所有命令",
