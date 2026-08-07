@@ -70,17 +70,22 @@ export function createCliApplication(): CliApplication {
     fileSystem,
     output,
     sandboxService,
+    // Kraken is a detached fork installed from a local checkout, not from the
+    // npm registry. The upstream package is a different project now: querying
+    // it would report unrelated versions, and `npm update -g` against it would
+    // overwrite this install with upstream's build. So version checking is off
+    // and updating means rebuilding the checkout.
+    // Reporting our own version means "latest" always equals "current", so the
+    // update banner never fires -- without needing to touch its call sites.
     getLatestPackageVersion: async () => {
-      // Yield first so the default `start` command can begin loading the server
-      // before this best-effort npm registry check runs.
       await new Promise<void>((resolve) => setImmediate(resolve));
-      return execSync(
-        'npm show @cloudcli-ai/cloudcli version',
-        { encoding: 'utf8' },
-      ).trim();
+      return packageMetadataJson.version;
     },
     updateGlobalPackage: () => {
-      execSync('npm update -g @cloudcli-ai/cloudcli', { stdio: 'inherit' });
+      output.log(
+        'Kraken is installed from a local checkout. To update:\n' +
+        '  cd <your kraken checkout> && git pull && npm run build && npm install -g .',
+      );
     },
     startServer: async () => {
       // The server executable is an entrypoint rather than a feature module,
